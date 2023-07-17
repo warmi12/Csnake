@@ -1,8 +1,6 @@
 #include <ncurses.h>
 
-//what about different files?
-//gif decoder lib in another files
-//src inc
+#include "menu.h"
 
 int main(){//args?
 
@@ -20,10 +18,7 @@ int main(){//args?
 	//records? high socre?
 	//options
 	//info
-	
+	menu();
 
-	printf("hello\n");
-
-
-
+        return 0;
 }
