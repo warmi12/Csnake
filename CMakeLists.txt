@@ -4,12 +4,13 @@ project(snake)
 
 set(CMAKE_C_STANDARD 99)
 
+add_subdirectory(src/gif)
 
 add_executable( 
 	${CMAKE_PROJECT_NAME}
 	src/main.c
-	src/gif/gifdec.c
 	src/menu/menu.c
+	src/sigterm/sigterm.c
 )
 
 find_package(Curses REQUIRED)
@@ -18,12 +19,14 @@ target_include_directories(
 	${CMAKE_PROJECT_NAME} PRIVATE
 	${CURSES_INCLUDE_DIR}
 	inc/gif/
-	inc/menu
+	inc/menu/
+	inc/sigterm/
 )
 
 target_link_libraries(
 	${CMAKE_PROJECT_NAME} PRIVATE
  	${CURSES_LIBRARIES}
+	gif
 )
 
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
