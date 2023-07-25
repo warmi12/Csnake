@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <stddef.h>
 #include <string.h>
+#include <ncurses.h>
 
 #include "sigterm.h"
 
@@ -13,7 +14,8 @@ void sigterm_init(void){
 }
 
 void term_snake(int signum){
-
+	
+	UNUSED(signum);	
 	endwin();
 }
 
