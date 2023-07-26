@@ -2,11 +2,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <ncurses.h>
+#include <stdbool.h>
 
 #include "menu.h"
 
-static uint16_t max_row, max_col, center_row, center_col;
-static char menu_strings[MENU_SIZE][MENU_MAX_STRING_SIZE] = {"NEW GAME","HIGH SCORE","OPTIONS","EXIT", "KAROLINKA"};
+static uint16_t max_row, max_col, center_row, center_col, selected_row, top_row, end_row;
+static char menu_strings[MENU_SIZE][MENU_MAX_STRING_SIZE] = {"NEW GAME","HIGH SCORE","OPTIONS","EXIT"};
 static menu_state_e menu_state;
 
 
@@ -34,6 +35,8 @@ void menu_init(void){
 	start_color();
 	get_screen_size();	
 	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+	noecho();
+	curs_set(0);
 }
 
 void menu_draw(void){
@@ -43,6 +46,8 @@ void menu_draw(void){
 	
 	center_row = (max_row/2);
 	center_col = (max_col/2);
+	top_row = center_row - (MENU_SIZE - 1);
+	end_row = center_row + (MENU_SIZE - 1);
 
 	while(menu_counter < MENU_SIZE){
 		
@@ -54,20 +59,66 @@ void menu_draw(void){
 		menu_counter++;
 	}
 
-	move(max_row/2, 20);
-	refresh();
-//        getch();
-//        endwin();
 
+	selected_row = top_row;
+	menu_highlight_row(selected_row);
+	refresh();
 }
 
 void menu_set_next_state(menu_state_e menu_next_state){
 	menu_state = menu_next_state;
 }
 
+void menu_highlight_row(uint16_t row){
+	mvchgat(row, 0, -1, A_BLINK | A_BOLD, 1, NULL);
+}
+
+void menu_unhighlight_row(uint16_t row){
+	mvchgat(row, 0, -1, A_NORMAL, 0, NULL);
+}
+
+void menu_button_process(int button){
+	
+	if(button == KEY_UP){
+		
+		menu_unhighlight_row(selected_row);
+
+		if(selected_row == top_row){
+			selected_row = end_row;
+		}		
+		else{
+			selected_row = selected_row - 2;
+		}
+
+		menu_highlight_row(selected_row);
+	}
+	else if(button == KEY_DOWN){
+		
+		menu_unhighlight_row(selected_row);
+
+		if(selected_row == end_row){
+			selected_row = top_row;
+		}
+		else{
+			selected_row = selected_row + 2;
+		}
+
+		menu_highlight_row(selected_row);
+	}
+	else if(button == KEY_MY_ENTER){
+		clear();
+		//check which button was clicked
+		selected_row - top_row
+	}
+
+}
+
 void menu(void){
 
-	while(1){
+	bool loop = 1;
+	int button = 0;
+
+	while(loop){
 		switch(menu_state){
 			case INIT:
 				menu_init();
@@ -77,15 +128,19 @@ void menu(void){
 				menu_draw();
 				menu_set_next_state(SELECT);
 				break;
-			case SELECT:
-				int ch = getch()
-				menu_set_next_state(IDLE);
+			case SELECT:;
+				button = getch();
+				menu_button_process(button);
+
+			//	menu_set_next_state(IDLE);
+				
+			//	endwin();
 				break;
 			default:
 				break;
 		}
 
-		refresh();
+		//refresh();
 	}
 
 }
