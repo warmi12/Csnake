@@ -9,6 +9,7 @@ add_subdirectory(src/gif)
 add_executable( 
 	${CMAKE_PROJECT_NAME}
 	src/main.c
+	src/screen/screen.c
 	src/menu/menu.c
 	src/sigterm/sigterm.c
 	src/snake/snake.c
@@ -20,6 +21,7 @@ target_include_directories(
 	${CMAKE_PROJECT_NAME} PRIVATE
 	${CURSES_INCLUDE_DIR}
 	inc/gif/
+	inc/screen/
 	inc/menu/
 	inc/sigterm/
 	inc/snake/

@@ -1,23 +1,18 @@
 #ifndef MENU_H
 #define MENU_H
 
-#define MIN_ROW_SIZE 50
-#define MIN_COL_SIZE 50
 #define MENU_SIZE 4
 #define MENU_MAX_STRING_SIZE 20
 #define MENU_ROW_SPACE 1
 #define KEY_MY_ENTER 10
 
 typedef enum {
-	MENU_INIT,
 	MENU_DRAW,
 	MENU_SELECT,
 	MENU_START_GAME,
 } menu_state_e;
 
 void get_screen_size(void);
-
-void menu_init(void);
 
 void menu_draw(void);
 

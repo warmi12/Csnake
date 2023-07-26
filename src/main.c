@@ -1,5 +1,6 @@
 #include <ncurses.h>
 
+#include "screen.h"
 #include "menu.h"
 
 int main(){//args?
@@ -18,6 +19,7 @@ int main(){//args?
 	//records? high socre?
 	//options
 	//info
+	screen_init();
 	menu();
 
         return 0;
