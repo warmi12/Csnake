@@ -11,6 +11,7 @@ add_executable(
 	src/main.c
 	src/menu/menu.c
 	src/sigterm/sigterm.c
+	src/snake/snake.c
 )
 
 find_package(Curses REQUIRED)
@@ -21,6 +22,7 @@ target_include_directories(
 	inc/gif/
 	inc/menu/
 	inc/sigterm/
+	inc/snake/
 )
 
 target_link_libraries(

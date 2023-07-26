@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "menu.h"
+#include "snake.h"
 
 static uint16_t max_row, max_col, center_row, center_col, selected_row, top_row, end_row;
 static char menu_strings[MENU_SIZE][MENU_MAX_STRING_SIZE] = {"NEW GAME","HIGH SCORE","OPTIONS","EXIT"};
@@ -106,9 +107,8 @@ void menu_button_process(int button){
 		menu_highlight_row(selected_row);
 	}
 	else if(button == KEY_MY_ENTER){
-		clear();
-		//check which button was clicked
-		selected_row - top_row
+		menu_state_e menu_next_state = ((selected_row - top_row) / 2) + 3;
+		menu_set_next_state(menu_next_state);
 	}
 
 }
@@ -120,22 +120,23 @@ void menu(void){
 
 	while(loop){
 		switch(menu_state){
-			case INIT:
+			case MENU_INIT:
 				menu_init();
-				menu_set_next_state(DRAW);
+				menu_set_next_state(MENU_DRAW);
 				break;
-			case DRAW:
+			case MENU_DRAW:
 				menu_draw();
-				menu_set_next_state(SELECT);
+				menu_set_next_state(MENU_SELECT);
 				break;
-			case SELECT:;
+			case MENU_SELECT:
 				button = getch();
 				menu_button_process(button);
-
-			//	menu_set_next_state(IDLE);
-				
-			//	endwin();
 				break;
+			case MENU_START_GAME:
+				clear();
+				refresh();
+				snake_run_game();//parameters for lvl itd? screen size?
+				break;				
 			default:
 				break;
 		}

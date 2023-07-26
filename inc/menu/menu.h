@@ -9,10 +9,10 @@
 #define KEY_MY_ENTER 10
 
 typedef enum {
-	INIT,
-	DRAW,
-	SELECT,
-	IDLE
+	MENU_INIT,
+	MENU_DRAW,
+	MENU_SELECT,
+	MENU_START_GAME,
 } menu_state_e;
 
 void get_screen_size(void);
