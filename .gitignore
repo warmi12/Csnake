@@ -6,4 +6,3 @@ build.ninja
 cmake_install.cmake
 CTestTestfile.cmake
 
-snake
