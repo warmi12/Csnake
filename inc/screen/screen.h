@@ -1,8 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#define MIN_ROW_SIZE 50
-#define MIN_COL_SIZE 50
+#define MIN_ROW_SIZE 20
+#define MIN_COL_SIZE 20
 
 typedef struct{
 
