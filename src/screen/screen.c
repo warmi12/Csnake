@@ -30,7 +30,8 @@ void screen_init(void){
 	start_color();
 	screen_get_size();	
 	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+	init_pair(2, COLOR_RED, COLOR_BLACK);
+	init_pair(3, COLOR_GREEN, COLOR_BLACK);
 	noecho();
-	nodelay(stdscr, TRUE);
 	curs_set(0);
 }

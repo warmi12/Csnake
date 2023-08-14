@@ -19,6 +19,8 @@ void menu_draw(void){
 	uint8_t menu_counter = 0;
 	int16_t offset_row = MENU_SIZE - 1;
 	
+	clear();
+	
 	top_row = screen_params.center_row - (MENU_SIZE - 1);
 	end_row = screen_params.center_row + (MENU_SIZE - 1);
 
@@ -103,13 +105,18 @@ void menu(void){
 			case MENU_START_GAME:
 				clear();
 				refresh();
-				snake_run_game();//parameters for lvl itd? screen size?
+				snake_run_game();
+				menu_set_next_state(MENU_DRAW);
+				break;	
+			case MENU_EXIT:
+				loop = 0;
+				endwin();
+				exit(0);
 				break;				
 			default:
 				break;
 		}
 
-		//refresh();
 	}
 
 }

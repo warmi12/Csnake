@@ -2,30 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "screen.h"
 #include "snake.h"
 
-//TODO READ FROM CONF
-//#define MAP_SIZE_X 40
-//#define MAP_SIZE_Y 20
-//#define SNAKE_START_SIZE 5
-
-//snake_state_e snake_state; //
-
-
-//snake_t* snake; //
-//u/int16_t snake_len;
-//uint16_t snake_max_size;
-//point_t food;
-//int8_t direction_x;
-//int8_t direction_y;
-//uint16_t offset_y;
-//uint16_t offset_x;
-//bool run = 1;
-
-//clock_t time_now, end;
 extern screen_params_t screen_params;
+uint16_t best_score = 5;
+uint8_t counter = 0;
 snake_t snake; 
 
 void snake_map_draw(uint8_t size_y, uint8_t size_x){
@@ -38,11 +22,14 @@ void snake_map_draw(uint8_t size_y, uint8_t size_x){
 		for(uint16_t x = snake.offset_x; x <= size_x + snake.offset_x; x++){
 			
 			mvprintw(y,x,"#");
+			mvchgat(y, x, 1, A_NORMAL, 2, NULL);
 
 			if(y != snake.offset_y && y != snake.offset_y + size_y){
 				x=snake.offset_x + size_x;
 				mvprintw(y,x,"#");
+				mvchgat(y, x, 1, A_NORMAL, 2, NULL);
 			}
+			
 		}
 	}
 
@@ -52,6 +39,7 @@ void snake_map_draw(uint8_t size_y, uint8_t size_x){
 void snake_food_draw(void){
 	
 	mvprintw(snake.food.y, snake.food.x, "O");
+	mvchgat(snake.food.y, snake.food.x, 1, A_NORMAL, 1, NULL);
 }
 
 void snake_draw(void){
@@ -60,18 +48,38 @@ void snake_draw(void){
 	
 	do{
 		mvprintw(snake.segments[idx].point.y, snake.segments[idx].point.x, "X");
+		mvchgat(snake.segments[idx].point.y, snake.segments[idx].point.x, 1, A_NORMAL, 3, NULL);
 		idx++;
 	}
 	while(snake.segments[idx].prev != NULL);
+	
+	mvchgat(snake.segments[0].point.y, snake.segments[0].point.x, 1, A_NORMAL | A_BOLD, 3, NULL);
+}
+
+bool snake_check_food_cords(uint16_t y, uint16_t x){
+
+	for(uint16_t idx = 0; idx < snake.len; idx++){
+	
+		if(snake.segments[idx].point.y == y && snake.segments[idx].point.x == x){
+
+			return 1;
+		}
+	}
+	
+	return 0;
 }
 
 void snake_generate_food(void){
 	
-	snake.food.y = rand() % (MAP_SIZE_Y - 2);		
-	snake.food.x = rand() % (MAP_SIZE_X - 2);
+	bool run = 1;
 	
-	snake.food.y = snake.food.y + (snake.offset_y + 2);
-	snake.food.x = snake.food.x + (snake.offset_x + 2);
+	while(run){
+	
+		snake.food.y = rand() % (MAP_SIZE_Y - 2) + (snake.offset_y + 2);		
+		snake.food.x = rand() % (MAP_SIZE_X - 2) + (snake.offset_x + 2);
+		
+		run = snake_check_food_cords(snake.food.y, snake.food.x);
+	}	
 }
 
 void snake_connect_points(uint16_t idx){
@@ -216,6 +224,11 @@ void snake_run(void){
 				snake_connect_points(snake.len);
 				
 				snake.len++;
+				snake.score++;
+				
+				if(snake.score > best_score){
+					best_score = snake.score;
+				}
 
 				snake_generate_food();
 			}
@@ -227,13 +240,20 @@ void snake_run(void){
 			}		
 			else{
 				clear();
-
+				
+				mvprintw(0,0,"%d",counter);
 				snake_map_draw(MAP_SIZE_Y + 2, MAP_SIZE_X + 2);
 				snake_map_draw(MAP_SIZE_Y,MAP_SIZE_X);
 				
-				snake_draw();
-				snake_food_draw();	
+				mvprintw(screen_params.center_row - (MAP_SIZE_Y + 6)/2, \
+					screen_params.center_col - MAP_SIZE_X / 2, "SCORE: %d", snake.score);
+
+				mvprintw(screen_params.center_row - (MAP_SIZE_Y + 6)/2, \
+					screen_params.center_col + (MAP_SIZE_X / 4) - 2, "BEST SCORE: %d", best_score);
 				
+				snake_food_draw();
+				snake_draw();
+			
 				refresh();
 			}
 		}
@@ -241,16 +261,28 @@ void snake_run(void){
 	
 }
 
-void snake_game_over(){
-;
+void snake_game_over(void){
+	
+	const char* game_over = "GAME OVER!";
+	uint8_t len = strlen(game_over);
+	
+	nodelay(stdscr, FALSE);
+	
+	mvprintw(screen_params.center_row, screen_params.center_col - len / 2, "%s", game_over);
+	refresh();
+	sleep(1);
 }
 
 void snake_init(void){
 	
+	nodelay(stdscr, TRUE);
+	
 	snake_map_draw(MAP_SIZE_Y + 2, MAP_SIZE_X + 2);
 	snake_map_draw(MAP_SIZE_Y,MAP_SIZE_X);
-
+ 
 	snake.len = SNAKE_START_SIZE;
+	snake.score = SNAKE_START_SIZE;
+	//best_score = SNAKE_START_SIZE;
 
 	snake.max_size = (MAP_SIZE_Y - 2) * (MAP_SIZE_X - 2);
 	snake.segments = (snake_segment_t*)malloc(sizeof(snake_segment_t) * snake.max_size);
@@ -269,9 +301,18 @@ void snake_init(void){
 	snake.run = 1;
 }
 
-void snake_run_game(void){
+void snake_deinit(void){
+	
+	memset(snake.segments, 0, sizeof(snake_segment_t)*snake.len);
+	free(snake.segments);
+	memset(&snake, 0, sizeof(snake_t));
+}
 
-	while(1){
+void snake_run_game(void){
+	
+	bool run = 1;
+	
+	while(run){
 		switch(snake.state){
 			case SNAKE_INIT:
 				snake_init();
@@ -279,10 +320,14 @@ void snake_run_game(void){
 				break;
 			case SNAKE_RUN:
 				snake_run();
+				snake_deinit();
 				snake.state = SNAKE_GAME_OVER;
 				break;
 			case SNAKE_GAME_OVER:
 				snake_game_over();
+				getch();
+				run = 0;
+				snake.state = SNAKE_INIT;
 				break;
 			default:
 				break;

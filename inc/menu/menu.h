@@ -10,6 +10,9 @@ typedef enum {
 	MENU_DRAW,
 	MENU_SELECT,
 	MENU_START_GAME,
+	MENU_HIGH_SCORE,
+	MENU_OPTIONS,
+	MENU_EXIT,
 } menu_state_e;
 
 void get_screen_size(void);

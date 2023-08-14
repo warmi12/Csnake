@@ -41,6 +41,7 @@ typedef struct snake_t{
 	
 	uint16_t len;
 	uint16_t max_size;
+	uint16_t score;
 
 	point_t food;
 	
@@ -58,10 +59,17 @@ typedef struct snake_t{
 void snake_map_draw(uint8_t size_y, uint8_t size_x);
 void snake_food_draw(void);
 void snake_draw(void);
-void snake_init(void);
+bool snake_check_food_cords(uint16_t y, uint16_t x);
+void snake_generate_food(void);
+void snake_connect_points(uint16_t idx);
+void snake_assign_default_cords(void);
 bool snake_is_move_allowed(clock_t time);
 bool snake_is_key_pressed(void);
+void snake_move(void);
+bool snake_is_eaten(void);
+bool snake_is_collision(void);
 void snake_run(void);
+void snake_game_over(void);
 void snake_run_game(void);
 
 #endif
